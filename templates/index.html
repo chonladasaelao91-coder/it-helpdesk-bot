@@ -1,612 +1,89 @@
-```html
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0B1024">
-    <title>IT Helpdesk | Service Center</title>
-
+    <title>IT Helpdesk - ระบบแจ้งซ่อม</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Prompt', sans-serif;
-            margin: 0;
-            min-height: 100vh;
-            background: #080D1C;
-            color: #18233D;
-        }
-
-        .app-bg {
-            background:
-                radial-gradient(ellipse at 12% 12%, rgba(62, 91, 220, .22), transparent 38%),
-                radial-gradient(ellipse at 88% 82%, rgba(120, 69, 224, .17), transparent 35%),
-                #080D1C;
-        }
-
-        .glass {
-            background: rgba(255, 255, 255, .97);
-            border: 1px solid rgba(255, 255, 255, .65);
-            box-shadow: 0 30px 100px rgba(0, 0, 0, .25);
-        }
-
-        .field {
-            width: 100%;
-            border: 1px solid #E1E7F0;
-            background: #F8FAFD;
-            border-radius: 12px;
-            padding: 13px 15px;
-            font-family: inherit;
-            font-size: 14px;
-            color: #17233E;
-            outline: none;
-            transition: border-color .2s, box-shadow .2s, background .2s;
-        }
-
-        .field:hover {
-            border-color: #C5D0E4;
-        }
-
-        .field:focus {
-            background: #FFFFFF;
-            border-color: #5378F5;
-            box-shadow: 0 0 0 4px rgba(83, 120, 245, .12);
-        }
-
-        .field::placeholder {
-            color: #A2AEC1;
-        }
-
-        select.field {
-            cursor: pointer;
-        }
-
-        .issue-card {
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 11px;
-            padding: 12px;
-            min-height: 76px;
-            border: 1px solid #E1E7F0;
-            border-radius: 13px;
-            background: #FFFFFF;
-            cursor: pointer;
-            transition: all .2s ease;
-        }
-
-        .issue-card:hover {
-            border-color: #AABCFD;
-            background: #F8FAFF;
-            transform: translateY(-1px);
-        }
-
-        .issue-card:has(input:checked) {
-            border-color: #5878F6;
-            background: #F0F4FF;
-            box-shadow: 0 0 0 2px rgba(88, 120, 246, .10);
-        }
-
-        .issue-card input {
-            position: absolute;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .issue-card:has(input:focus-visible) {
-            outline: 3px solid rgba(88, 120, 246, .4);
-            outline-offset: 3px;
-        }
-
-        .issue-icon {
-            width: 40px;
-            height: 40px;
-            flex-shrink: 0;
-            display: grid;
-            place-items: center;
-            border-radius: 11px;
-        }
-
-        .primary-btn {
-            background: linear-gradient(105deg, #4169F5, #6652E9);
-            box-shadow: 0 9px 22px rgba(78, 95, 232, .23);
-            transition: transform .2s, box-shadow .2s, opacity .2s;
-        }
-
-        .primary-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 13px 28px rgba(78, 95, 232, .32);
-        }
-
-        .primary-btn:disabled {
-            opacity: .7;
-            cursor: wait;
-        }
-
-        .dashboard-btn {
-            transition: all .2s ease;
-        }
-
-        .dashboard-btn:hover {
-            border-color: #C5D2F8;
-            background: #F3F6FF;
-            transform: translateY(-1px);
-        }
-
-        .dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 999px;
-            background: #34D399;
-            box-shadow: 0 0 0 4px rgba(52, 211, 153, .12);
-        }
-
-        @media (max-width: 640px) {
-            .page-shell {
-                padding: 16px 12px !important;
-            }
-
-            .glass {
-                border-radius: 22px !important;
-            }
-
-            .form-panel {
-                padding: 23px 18px !important;
-            }
-
-            .issue-card {
-                padding: 9px;
-                gap: 8px;
-            }
-
-            .issue-icon {
-                width: 34px;
-                height: 34px;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                scroll-behavior: auto !important;
-                transition-duration: .01ms !important;
-                animation-duration: .01ms !important;
-            }
-        }
+        body { font-family: 'Prompt', sans-serif; }
     </style>
 </head>
-
-<body class="app-bg">
-
-    <main class="page-shell min-h-screen flex items-center justify-center px-5 py-10">
-
-        <div class="glass w-full max-w-6xl rounded-[28px] overflow-hidden">
-
-            <!-- Top navigation -->
-            <header class="flex items-center justify-between gap-4 px-6 sm:px-9 py-5 border-b border-slate-100">
-
-                <a href="/" class="flex items-center gap-3 no-underline">
-                    <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-white"
-                         style="background:linear-gradient(135deg,#4169F5,#7955E8)">
-                        <i data-lucide="headset" class="w-6 h-6"></i>
-                    </div>
-
-                    <div>
-                        <div class="font-bold text-slate-900 text-base leading-tight">
-                            IT Helpdesk
-                        </div>
-                        <div class="text-xs text-slate-500 mt-1">
-                            IT Service Center
-                        </div>
-                    </div>
-                </a>
-
-                <div class="flex items-center gap-2 rounded-full px-3 py-2"
-                     style="background:#ECFDF5">
-                    <span class="dot"></span>
-                    <span class="text-xs font-semibold" style="color:#087F5B">
-                        Service Portal
-                    </span>
-                </div>
-
-            </header>
-
-            <div class="grid lg:grid-cols-[0.85fr_1.15fr]">
-
-                <!-- Left: Welcome panel -->
-                <aside class="relative overflow-hidden p-7 sm:p-10 lg:p-12 text-white"
-                       style="background:linear-gradient(150deg,#111B3B 0%,#182755 52%,#29265C 100%)">
-
-                    <!-- Decorative elements -->
-                    <div class="absolute -top-20 -right-20 w-64 h-64 rounded-full border border-white/10"></div>
-                    <div class="absolute -top-10 -right-10 w-44 h-44 rounded-full border border-white/10"></div>
-                    <div class="absolute bottom-0 right-0 w-64 h-64 rounded-full"
-                         style="background:radial-gradient(circle,rgba(100,115,255,.2),transparent 70%)"></div>
-
-                    <div class="relative z-10">
-
-                        <div class="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-white/10 text-xs font-medium"
-                             style="background:rgba(255,255,255,.07);color:#C9D7FF">
-                            <i data-lucide="sparkles" class="w-4 h-4"></i>
-                            YOUR DIGITAL IT ASSISTANT
-                        </div>
-
-                        <h1 class="text-3xl sm:text-4xl font-bold leading-tight mt-7">
-                            Technology<br>
-                            should just <span style="color:#9FB6FF">work.</span>
-                        </h1>
-
-                        <p class="text-sm sm:text-base leading-7 mt-5"
-                           style="color:#B7C5E5">
-                            พบปัญหาด้าน IT ใช่ไหม?
-                            แจ้งรายละเอียดให้ทีมงานทราบ
-                            แล้วเราจะช่วยดูแลคุณให้เร็วที่สุด
-                        </p>
-
-                        <!-- Service benefits -->
-                        <div class="mt-9 space-y-5">
-
-                            <div class="flex gap-4 items-start">
-                                <div class="w-11 h-11 shrink-0 rounded-xl flex items-center justify-center"
-                                     style="background:rgba(105,137,255,.17);color:#AFC3FF">
-                                    <i data-lucide="clipboard-list" class="w-5 h-5"></i>
-                                </div>
-                                <div>
-                                    <div class="font-semibold text-sm">แจ้งปัญหาได้ในที่เดียว</div>
-                                    <p class="text-xs mt-1 leading-5" style="color:#AAB9D9">
-                                        กรอกข้อมูลและอธิบายอาการได้อย่างสะดวก
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-4 items-start">
-                                <div class="w-11 h-11 shrink-0 rounded-xl flex items-center justify-center"
-                                     style="background:rgba(66,211,170,.13);color:#6EE7C0">
-                                    <i data-lucide="messages-square" class="w-5 h-5"></i>
-                                </div>
-                                <div>
-                                    <div class="font-semibold text-sm">รับการแจ้งเตือนผ่าน LINE</div>
-                                    <p class="text-xs mt-1 leading-5" style="color:#AAB9D9">
-                                        รองรับการแจ้งเตือนผ่านระบบที่เชื่อมต่อไว้
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-4 items-start">
-                                <div class="w-11 h-11 shrink-0 rounded-xl flex items-center justify-center"
-                                     style="background:rgba(201,146,255,.13);color:#D7B6FF">
-                                    <i data-lucide="chart-no-axes-combined" class="w-5 h-5"></i>
-                                </div>
-                                <div>
-                                    <div class="font-semibold text-sm">ติดตามสถานะได้ง่าย</div>
-                                    <p class="text-xs mt-1 leading-5" style="color:#AAB9D9">
-                                        เข้าสู่หน้าสถานะเคสเพื่อดูข้อมูลในระบบ
-                                    </p>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <!-- Support card -->
-                        <div class="mt-10 p-4 rounded-2xl border border-white/10"
-                             style="background:rgba(255,255,255,.055)">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-xl flex items-center justify-center"
-                                     style="background:rgba(255,255,255,.1)">
-                                    <i data-lucide="shield-check" class="w-5 h-5"
-                                       style="color:#B7C9FF"></i>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-semibold">We're here to help.</div>
-                                    <div class="text-xs mt-1" style="color:#AAB9D9">
-                                        แจ้งปัญหาให้ครบ เพื่อการแก้ไขที่ตรงจุด
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </aside>
-
-                <!-- Right: Request form -->
-                <section class="form-panel p-6 sm:p-9 lg:p-11">
-
-                    <div class="mb-7">
-                        <div class="text-xs font-bold uppercase tracking-[.18em]"
-                             style="color:#607BF2">
-                            CREATE A REQUEST
-                        </div>
-
-                        <h2 class="text-2xl font-bold text-slate-900 mt-2">
-                            แจ้งปัญหา IT
-                        </h2>
-
-                        <p class="text-sm text-slate-500 mt-2 leading-6">
-                            กรุณากรอกข้อมูลให้ครบถ้วน
-                            เพื่อให้ทีม IT ตรวจสอบและช่วยเหลือได้อย่างเหมาะสม
-                        </p>
-
-                        <div class="flex items-center gap-2 text-xs text-slate-400 mt-4">
-                            <i data-lucide="asterisk" class="w-3.5 h-3.5"
-                               style="color:#E87979"></i>
-                            ช่องที่จำเป็นต้องกรอก
-                        </div>
-                    </div>
-
-                    <form action="/submit" method="POST" id="helpdeskForm"
-                          class="space-y-5">
-
-                        <!-- Name -->
-                        <div>
-                            <label for="name"
-                                   class="block text-sm font-semibold text-slate-700 mb-2">
-                                ชื่อ-นามสกุล
-                                <span class="text-slate-400 font-normal text-xs ml-1">
-                                    Full name
-                                </span>
-                                <span class="text-rose-500">*</span>
-                            </label>
-
-                            <div class="relative">
-                                <i data-lucide="user-round"
-                                   class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
-
-                                <input type="text" id="name" name="name"
-                                       required maxlength="150"
-                                       autocomplete="name"
-                                       placeholder="กรอกชื่อและนามสกุลของคุณ"
-                                       class="field pl-11">
-                            </div>
-                        </div>
-
-                        <!-- Department -->
-                        <div>
-                            <label for="department"
-                                   class="block text-sm font-semibold text-slate-700 mb-2">
-                                แผนก / ฝ่าย
-                                <span class="text-slate-400 font-normal text-xs ml-1">
-                                    Department
-                                </span>
-                                <span class="text-rose-500">*</span>
-                            </label>
-
-                            <div class="relative">
-                                <i data-lucide="building-2"
-                                   class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none"></i>
-
-                                <select id="department" name="department" required
-                                        class="field pl-11">
-                                    <option value="" disabled selected>
-                                        เลือกแผนก / ฝ่ายของคุณ
-                                    </option>
-                                    <option value="HR">HR</option>
-                                    <option value="IT">IT</option>
-                                    <option value="Purchasing">Purchasing</option>
-                                    <option value="Safety">Safety</option>
-                                    <option value="Sale">Sale</option>
-                                    <option value="Finance">Finance</option>
-                                    <option value="Eng_AUTP">Eng_AUTP</option>
-                                    <option value="Eng_HEAP">Eng_HEAP</option>
-                                    <option value="GM_AUTP">GM_AUTP</option>
-                                    <option value="GM_HEAP">GM_HEAP</option>
-                                    <option value="PD_AUTP">PD_AUTP</option>
-                                    <option value="PD_HEAP">PD_HEAP</option>
-                                    <option value="QA_AUTP">QA_AUTP</option>
-                                    <option value="QA_HEAP">QA_HEAP</option>
-                                    <option value="QC_AUTP">QC_AUTP</option>
-                                    <option value="QC_HEAP">QC_HEAP</option>
-                                    <option value="Warehouse_AUTP">Warehouse_AUTP</option>
-                                    <option value="Warehouse_HEAP">Warehouse_HEAP</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Issue type -->
-                        <fieldset>
-                            <legend class="block text-sm font-semibold text-slate-700 mb-3">
-                                ประเภทปัญหา
-                                <span class="text-slate-400 font-normal text-xs ml-1">
-                                    Problem type
-                                </span>
-                                <span class="text-rose-500">*</span>
-                            </legend>
-
-                            <div class="grid grid-cols-2 gap-3">
-
-                                <label class="issue-card">
-                                    <input type="radio" name="issue_type"
-                                           value="คอมพิวเตอร์ / โน้ตบุ๊ก"
-                                           checked required>
-                                    <div class="issue-icon"
-                                         style="background:#EEF2FF;color:#526DF3">
-                                        <i data-lucide="monitor" class="w-5 h-5"></i>
-                                    </div>
-                                    <div class="min-w-0">
-                                        <div class="text-xs sm:text-sm font-semibold text-slate-800">
-                                            คอมพิวเตอร์
-                                        </div>
-                                        <div class="text-[11px] text-slate-400 mt-1">
-                                            PC / Notebook
-                                        </div>
-                                    </div>
-                                </label>
-
-                                <label class="issue-card">
-                                    <input type="radio" name="issue_type"
-                                           value="อินเทอร์เน็ต / Network" required>
-                                    <div class="issue-icon"
-                                         style="background:#E7F8FF;color:#0C91C7">
-                                        <i data-lucide="wifi" class="w-5 h-5"></i>
-                                    </div>
-                                    <div class="min-w-0">
-                                        <div class="text-xs sm:text-sm font-semibold text-slate-800">
-                                            อินเทอร์เน็ต
-                                        </div>
-                                        <div class="text-[11px] text-slate-400 mt-1">
-                                            Network / Wi-Fi
-                                        </div>
-                                    </div>
-                                </label>
-
-                                <label class="issue-card">
-                                    <input type="radio" name="issue_type"
-                                           value="เครื่องพิมพ์ (Printer)" required>
-                                    <div class="issue-icon"
-                                         style="background:#FFF3E8;color:#E68A35">
-                                        <i data-lucide="printer" class="w-5 h-5"></i>
-                                    </div>
-                                    <div class="min-w-0">
-                                        <div class="text-xs sm:text-sm font-semibold text-slate-800">
-                                            เครื่องพิมพ์
-                                        </div>
-                                        <div class="text-[11px] text-slate-400 mt-1">
-                                            Printer / Scanner
-                                        </div>
-                                    </div>
-                                </label>
-
-                                <label class="issue-card">
-                                    <input type="radio" name="issue_type"
-                                           value="ระบบซอฟต์แวร์ / อื่นๆ" required>
-                                    <div class="issue-icon"
-                                         style="background:#F4EFFF;color:#9663DF">
-                                        <i data-lucide="settings-2" class="w-5 h-5"></i>
-                                    </div>
-                                    <div class="min-w-0">
-                                        <div class="text-xs sm:text-sm font-semibold text-slate-800">
-                                            ซอฟต์แวร์ / อื่นๆ
-                                        </div>
-                                        <div class="text-[11px] text-slate-400 mt-1">
-                                            Software / Other
-                                        </div>
-                                    </div>
-                                </label>
-
-                            </div>
-                        </fieldset>
-
-                        <!-- Details -->
-                        <div>
-                            <div class="flex items-center justify-between gap-3 mb-2">
-                                <label for="detail"
-                                       class="text-sm font-semibold text-slate-700">
-                                    รายละเอียดปัญหา
-                                    <span class="text-rose-500">*</span>
-                                </label>
-                                <span class="text-xs text-slate-400">
-                                    Problem details
-                                </span>
-                            </div>
-
-                            <textarea id="detail" name="detail" rows="4"
-                                      required maxlength="3000"
-                                      class="field resize-y"
-                                      placeholder="อธิบายอาการที่พบ เช่น เปิดเครื่องไม่ติด, ปริ้นไม่ออก, เข้าอินเทอร์เน็ตไม่ได้..."></textarea>
-
-                            <div class="flex items-start gap-2 mt-2 text-xs text-slate-400">
-                                <i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5"></i>
-                                <span>
-                                    ระบุอาการ ข้อความแจ้งเตือน หรือช่วงเวลาที่เกิดปัญหา
-                                    เพื่อช่วยให้ทีม IT ตรวจสอบได้เร็วขึ้น
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Submit -->
-                        <button type="submit" id="submitBtn"
-                                class="primary-btn w-full rounded-xl py-4 px-5 text-white font-semibold text-sm flex items-center justify-center gap-2">
-                            <i data-lucide="send" class="w-5 h-5"></i>
-                            <span id="submitText">ส่งเรื่องแจ้งทีม IT</span>
-                        </button>
-
-                        <p class="text-center text-xs text-slate-400 leading-5">
-                            กรุณาตรวจสอบข้อมูลก่อนกดส่ง
-                            <br>
-                            ระบบจะดำเนินการตามการตั้งค่าของ IT Helpdesk
-                        </p>
-
-                    </form>
-
-                    <!-- Dashboard shortcut -->
-                    <div class="mt-7 pt-6 border-t border-slate-100">
-                        <a href="/dashboard"
-                           class="dashboard-btn group flex items-center justify-between gap-4 p-4 rounded-xl border border-slate-200 no-underline">
-
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-                                     style="background:#EEF2FF;color:#526DF3">
-                                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-                                </div>
-                                <div class="min-w-0">
-                                    <div class="text-sm font-semibold text-slate-800">
-                                        ติดตามสถานะเคส
-                                    </div>
-                                    <div class="text-xs text-slate-500 mt-1">
-                                        ดูรายการแจ้งปัญหาทั้งหมดในระบบ
-                                    </div>
-                                </div>
-                            </div>
-
-                            <i data-lucide="arrow-up-right"
-                               class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-indigo-600"></i>
-                        </a>
-                    </div>
-
-                </section>
+<body class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-800 flex items-center justify-center min-h-screen p-4">
+    <div class="max-w-md w-full bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl p-6 sm:p-7 border border-white/30 relative overflow-hidden">
+        <!-- แถบสีตกแต่งด้านบน -->
+        <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-400"></div>
+        
+        <div class="text-center mb-6 pt-1">
+            <div class="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-tr from-blue-50 to-indigo-50 text-blue-600 rounded-2xl text-3xl mb-3 shadow-sm border border-blue-100/50">
+                💻
             </div>
-
-            <!-- Footer -->
-            <footer class="flex flex-col sm:flex-row items-center justify-between gap-2 px-6 sm:px-9 py-4 border-t border-slate-100"
-                    style="background:#FAFBFE">
-
-                <div class="text-xs text-slate-400">
-                    IT Helpdesk · Internal Service Portal
-                </div>
-
-                <div class="flex items-center gap-2 text-xs text-slate-400">
-                    <i data-lucide="message-circle" class="w-4 h-4"
-                       style="color:#16A34A"></i>
-                    LINE Messaging API Integration
-                </div>
-
-            </footer>
-
+            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">IT Helpdesk</h1>
+            <p class="text-sm text-slate-600 mt-1 font-medium">ระบบแจ้งปัญหาและขอความช่วยเหลือจากทีม IT</p>
         </div>
 
-    </main>
+        <form action="/submit" method="POST" class="space-y-4" onsubmit="this.querySelector('button[type=submit]').disabled=true; this.querySelector('button[type=submit]').innerText='กำลังส่งข้อมูล...';">
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">ชื่อ-นามสกุล (User Name)</label>
+                <input type="text" name="name" required placeholder="ระบุชื่อของคุณ" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 focus:outline-none text-base transition bg-white shadow-sm font-medium">
+            </div>
 
-    <script>
-        // Initialize icons
-        lucide.createIcons();
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">แผนก / ฝ่าย (Department)</label>
+                <select name="department" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 focus:outline-none text-base bg-white transition font-medium shadow-sm">
+                    <option value="" disabled selected>-- กรุณาเลือกแผนก / ฝ่าย --</option>
+                    <option value="HR">HR</option>
+                    <option value="IT">IT</option>
+                    <option value="Purchasing">Purchasing</option>
+                    <option value="Safety">Safety</option>
+                    <option value="Sale">Sale</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Eng_AUTP">Eng_AUTP</option>
+                    <option value="Eng_HEAP">Eng_HEAP</option>
+                    <option value="GM_AUTP">GM_AUTP</option>
+                    <option value="GM_HEAP">GM_HEAP</option>
+                    <option value="PD_AUTP">PD_AUTP</option>
+                    <option value="PD_HEAP">PD_HEAP</option>
+                    <option value="QA_AUTP">QA_AUTP</option>
+                    <option value="QA_HEAP">QA_HEAP</option>
+                    <option value="QC_AUTP">QC_AUTP</option>
+                    <option value="QC_HEAP">QC_HEAP</option>
+                    <option value="Warehouse_AUTP">Warehouse_AUTP</option>
+                    <option value="Warehouse_HEAP">Warehouse_HEAP</option>
+                </select>
+            </div>
 
-        // Prevent accidental double submission.
-        // The server remains responsible for processing the request.
-        const form = document.getElementById('helpdeskForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const submitText = document.getElementById('submitText');
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">ประเภทปัญหา (Problem Type)</label>
+                <select name="issue_type" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 focus:outline-none text-base bg-white transition font-medium shadow-sm">
+                    <option value="คอมพิวเตอร์ / โน้ตบุ๊ก">💻 Computer / Notebook</option>
+                    <option value="อินเทอร์เน็ต / Network">🌐 อินเทอร์เน็ต / Network</option>
+                    <option value="เครื่องพิมพ์ (Printer)">🖨️ เครื่องพิมพ์ (Printer)</option>
+                    <option value="ระบบซอฟต์แวร์ / อื่นๆ">⚙️ ระบบซอฟต์แวร์ / อื่นๆ</option>
+                </select>
+            </div>
 
-        form.addEventListener('submit', function (event) {
-            if (!form.checkValidity()) {
-                return;
-            }
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">รายละเอียดอาการ (Details of symptoms)</label>
+                <textarea name="detail" rows="3" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 focus:outline-none text-base transition bg-white shadow-sm font-medium" placeholder="อธิบายอาการเบื้องต้น เช่น เปิดไม่ติด, ปริ้นไม่ออก..."></textarea>
+            </div>
 
-            if (submitBtn.disabled) {
-                event.preventDefault();
-                return;
-            }
+            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold py-3 rounded-xl transition-all duration-200 shadow-lg shadow-blue-600/25 text-base active:scale-[0.99] cursor-pointer mt-1">
+                🚀 ส่งเรื่องแจ้งทีม IT
+            </button>
+        </form>
 
-            submitBtn.disabled = true;
-            submitText.textContent = 'กำลังส่งข้อมูล...';
-        });
-    </script>
-
+        <!-- ปุ่มทางลัดไปหน้า Dashboard -->
+        <div class="mt-4">
+            <a href="/dashboard" class="block text-center w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-sm transition border border-slate-200 shadow-sm">
+                📊 ดูสถานะเคสทั้งหมดในระบบ
+            </a>
+        </div>
+        
+        <div class="text-center mt-5">
+            <p class="text-xs text-slate-500 font-semibold">ระบบแจ้งเตือนอัตโนมัติผ่าน LINE Messaging API</p>
+        </div>
+    </div>
 </body>
 </html>
