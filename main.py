@@ -11,23 +11,29 @@ import requests
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
-# ⚠️ ตั้งค่า LINE Token และ Domain ของ Render สำหรับโปรเจกต์ IT Helpdesk
+# ⚠️ ตั้งค่า LINE Token และ Domain ของ Render
 LINE_ACCESS_TOKEN = (
     "Kk2/DLOisxDYgvPI2WICBRGy98EN6Ln2+ry2hD57kH45D7BSWPpkrRx5lISwCImSBH8rFBTsC6OoXugT8dBJntGwg2EJbP4oTaY/cIuWX//7YQlgfhNLF2bf4tqdqrBn8eH1whNB0PRoCFHejv4+WAdB04t89/1O/w1cDnyilFU="
 )
 LINE_USER_ID = "U32ef157628dbd5df9f472662602e882e"
-RENDER_URL = "https://it-helpdesk-bot-pepi.onrender.com"  # เปลี่ยนเป็น URL บน Render ของคุณ
+RENDER_URL = "https://it-helpdesk-bot-pepi.onrender.com"
 
-GOOGLE_SHEET_NAME = "it_helpdesk_log"  # ชื่อ Google Sheet สำหรับเก็บข้อมูลแจ้งซ่อม
+# 🔴 แนะนำ: วาง URL ของ Google Sheet จริงของคุณตรงนี้เลย เพื่อความแม่นยำ 100%
+GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/วาง_SHEET_ID_ของคุณตรงนี้/edit"
+GOOGLE_SHEET_NAME = "it_helpdesk_log"
 
 
 def get_google_sheet():
   try:
     gc = gspread.service_account(filename="credentials.json")
-    sh = gc.open(GOOGLE_SHEET_NAME)
+    # ใช้ open_by_url หรือ open แบบระบุชัดเจน
+    try:
+      sh = gc.open_by_url(GOOGLE_SHEET_URL)
+    except Exception:
+      sh = gc.open(GOOGLE_SHEET_NAME)
     return sh.sheet1
   except Exception as e:
-    print("Google Sheet connection error:", e)
+    print("❌ Google Sheet Connection Error:", e)
     return None
 
 
@@ -48,7 +54,6 @@ def send_line_notification(message):
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-  # ดึงหน้า index.html จากโฟลเดอร์ templates
   return templates.TemplateResponse(request=request, name="index.html")
 
 
@@ -62,13 +67,19 @@ async def submit_form(
   timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
   sheet = get_google_sheet()
 
-  row_idx = 1
+  row_idx = 2  # ค่าเริ่มต้นหากเพิ่งเริ่มบันทึกแถวแรก
   if sheet:
-    all_rows = sheet.get_all_values()
-    row_idx = (
-        len(all_rows) + 1
-    )  # คำนวณแถวเพื่อทำลิงก์ปิดงานใน LINE ให้ตรงกับตาราง
-    sheet.append_row([timestamp, name, department, issue_type, detail, "รอดำเนินการ"])
+    try:
+      all_values = sheet.get_all_values()
+      row_idx = len(all_values) + 1
+      sheet.append_row(
+          [timestamp, name, department, issue_type, detail, "รอดำเนินการ"]
+      )
+      print(f"✅ บันทึกข้อมูลเรียบร้อยแล้วที่แถว {row_idx}")
+    except Exception as e:
+      print("❌ เกิดข้อผิดพลาดขณะเพิ่มข้อมูลลง Sheet:", e)
+  else:
+    print("⚠️ ไม่สามารถเชื่อมต่อ Google Sheet ได้ ข้อมูลจึงไม่ถูกบันทึก")
 
   # ส่ง LINE แจ้งเตือนพร้อมลิงก์กดปิดงาน
   line_msg = (
@@ -89,11 +100,10 @@ async def submit_form(
 
 @app.get("/close-ticket/{row_idx}", response_class=HTMLResponse)
 async def close_ticket(request: Request, row_idx: int):
-  """อัปเดตสถานะใน Google Sheets เป็น 'เสร็จสิ้น' เมื่อกดจาก LINE"""
   try:
     sheet = get_google_sheet()
     if sheet:
-      sheet.update_cell(row_idx, 6, "เสร็จสิ้น")  # คอลัมน์ที่ 6 คือ สถานะ
+      sheet.update_cell(row_idx, 6, "เสร็จสิ้น")
   except Exception as e:
     print("Close ticket error:", e)
 
@@ -142,7 +152,6 @@ async def dashboard(request: Request):
   except Exception as e:
     print("Dashboard load error:", e)
 
-  # หน้าแดชบอร์ดแสดงตารางเคส
   html_content = f"""
     <!DOCTYPE html>
     <html lang="th">
