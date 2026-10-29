@@ -19,7 +19,7 @@ LINE_USER_ID = "U32ef157628dbd5df9f472662602e882e"
 RENDER_URL = "https://it-helpdesk-bot-pepi.onrender.com"
 
 # 🔴 แนะนำ: วาง URL ของ Google Sheet จริงของคุณตรงนี้เลย เพื่อความแม่นยำ 100%
-GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/วาง_SHEET_ID_ของคุณตรงนี้/edit"
+GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1Mri_ldBxXkIQYuFfMV55Bo_FmgsVfj0fiPWJzSbDqp0/edit"
 GOOGLE_SHEET_NAME = "it_helpdesk_log"
 
 
