@@ -16,7 +16,7 @@ LINE_ACCESS_TOKEN = (
     "Kk2/DLOisxDYgvPI2WICBRGy98EN6Ln2+ry2hD57kH45D7BSWPpkrRx5lISwCImSBH8rFBTsC6OoXugT8dBJntGwg2EJbP4oTaY/cIuWX//7YQlgfhNLF2bf4tqdqrBn8eH1whNB0PRoCFHejv4+WAdB04t89/1O/w1cDnyilFU="
 )
 LINE_USER_ID = "U32ef157628dbd5df9f472662602e882e"
-RENDER_URL = "https://ชื่อโปรเจกต์it-helpdeskของคุณ.onrender.com"  # เปลี่ยนเป็น URL บน Render ของคุณ
+RENDER_URL = "https://it-helpdesk-bot-pepi.onrender.com"  # เปลี่ยนเป็น URL บน Render ของคุณ
 
 GOOGLE_SHEET_NAME = "it_helpdesk_log"  # ชื่อ Google Sheet สำหรับเก็บข้อมูลแจ้งซ่อม
 
