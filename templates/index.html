@@ -5,35 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IT Helpdesk - ระบบแจ้งซ่อม</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Prompt', sans-serif; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-800 flex items-center justify-center min-h-screen p-4 sm:p-6">
-    <div class="max-w-lg w-full bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 sm:p-10 border border-white/30 relative overflow-hidden">
+<body class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-800 flex items-center justify-center min-h-screen p-4">
+    <!-- ขนาดกล่องฟอร์มเท่าเดิม (max-w-md และ p-6) -->
+    <div class="max-w-md w-full bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl p-6 border border-white/30 relative overflow-hidden">
         <!-- แถบสีตกแต่งด้านบน -->
-        <div class="absolute top-0 left-0 right-0 h-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-400"></div>
+        <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-400"></div>
         
-        <div class="text-center mb-8 pt-2">
-            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-tr from-blue-50 to-indigo-50 text-blue-600 rounded-3xl text-4xl mb-4 shadow-sm border border-blue-100/50">
+        <div class="text-center mb-5 pt-1">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-tr from-blue-50 to-indigo-50 text-blue-600 rounded-xl text-2xl mb-2 shadow-sm border border-blue-100/50">
                 💻
             </div>
-            <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">IT Helpdesk</h1>
-            <p class="text-base text-slate-600 mt-2 font-semibold">ระบบแจ้งปัญหาและขอความช่วยเหลือจากทีม IT</p>
+            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">IT Helpdesk</h1>
+            <p class="text-xs text-slate-600 mt-0.5 font-medium">ระบบแจ้งปัญหาและขอความช่วยเหลือจากทีม IT</p>
         </div>
 
-        <form action="/submit" method="POST" class="space-y-6" onsubmit="this.querySelector('button[type=submit]').disabled=true; this.querySelector('button[type=submit]').innerText='กำลังส่งข้อมูล...';">
-            <!-- ชื่อ-นามสกุล -->
+        <form action="/submit" method="POST" class="space-y-4" onsubmit="this.querySelector('button[type=submit]').disabled=true; this.querySelector('button[type=submit]').innerText='กำลังส่งข้อมูล...';">
+            <!-- ชื่อ-นามสกุล (ตัวหนังสือใหญ่ขึ้นเป็น text-base) -->
             <div>
-                <label class="block text-sm font-bold uppercase tracking-wider text-slate-700 mb-2">ชื่อ-นามสกุล (User Name)</label>
-                <input type="text" name="name" required placeholder="ระบุชื่อของคุณ" class="w-full px-5 py-4 rounded-2xl border-2 border-slate-300 focus:ring-4 focus:ring-blue-500/30 focus:border-blue-600 focus:outline-none text-lg transition bg-white shadow-sm font-medium">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">ชื่อ-นามสกุล (User Name)</label>
+                <input type="text" name="name" required placeholder="ระบุชื่อของคุณ" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 focus:outline-none text-base transition bg-white shadow-sm font-medium">
             </div>
 
-            <!-- แผนก / ฝ่าย -->
+            <!-- แผนก / ฝ่าย (ตัวหนังสือใหญ่ขึ้นเป็น text-base) -->
             <div>
-                <label class="block text-sm font-bold uppercase tracking-wider text-slate-700 mb-2">แผนก / ฝ่าย (Department)</label>
-                <select name="department" required class="w-full px-5 py-4 rounded-2xl border-2 border-slate-300 focus:ring-4 focus:ring-blue-500/30 focus:border-blue-600 focus:outline-none text-lg bg-white transition font-medium shadow-sm">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">แผนก / ฝ่าย (Department)</label>
+                <select name="department" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 focus:outline-none text-base bg-white transition font-medium shadow-sm">
                     <option value="" disabled selected>-- กรุณาเลือกแผนก / ฝ่าย --</option>
                     <option value="HR">HR</option>
                     <option value="IT">IT</option>
@@ -56,57 +57,57 @@
                 </select>
             </div>
 
-            <!-- ประเภทปัญหา (แบบการ์ดปุ่มกดขนาดใหญ่ อ่านง่าย) -->
+            <!-- ประเภทปัญหา (ปุ่มการ์ด 2x2 ขนาดพอดีกล่อง ฟอนต์ตัวหนังสือชัดเจนขึ้น) -->
             <div>
-                <label class="block text-sm font-bold uppercase tracking-wider text-slate-700 mb-2">ประเภทปัญหา (Problem Type)</label>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <label class="issue-card cursor-pointer border-2 border-slate-200 bg-slate-50 hover:bg-blue-50/50 p-4 rounded-2xl flex items-center space-x-3 transition-all">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">ประเภทปัญหา (Problem Type)</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <label class="issue-card cursor-pointer border border-slate-200 bg-slate-50 hover:bg-blue-50/50 p-2.5 rounded-xl flex items-center space-x-2 transition-all">
                         <input type="radio" name="issue_type" value="คอมพิวเตอร์ / โน้ตบุ๊ก" class="hidden" checked onchange="updateCardStyle()">
-                        <span class="text-2xl">💻</span>
-                        <span class="text-sm font-bold text-slate-800">คอมพิวเตอร์ / โน้ตบุ๊ก</span>
+                        <span class="text-xl">💻</span>
+                        <span class="text-xs font-bold text-slate-800">คอมพิวเตอร์ / โน้ตบุ๊ก</span>
                     </label>
 
-                    <label class="issue-card cursor-pointer border-2 border-slate-200 bg-slate-50 hover:bg-blue-50/50 p-4 rounded-2xl flex items-center space-x-3 transition-all">
+                    <label class="issue-card cursor-pointer border border-slate-200 bg-slate-50 hover:bg-blue-50/50 p-2.5 rounded-xl flex items-center space-x-2 transition-all">
                         <input type="radio" name="issue_type" value="อินเทอร์เน็ต / Network" class="hidden" onchange="updateCardStyle()">
-                        <span class="text-2xl">🌐</span>
-                        <span class="text-sm font-bold text-slate-800">อินเทอร์เน็ต / Network</span>
+                        <span class="text-xl">🌐</span>
+                        <span class="text-xs font-bold text-slate-800">อินเทอร์เน็ต / Network</span>
                     </label>
 
-                    <label class="issue-card cursor-pointer border-2 border-slate-200 bg-slate-50 hover:bg-blue-50/50 p-4 rounded-2xl flex items-center space-x-3 transition-all">
+                    <label class="issue-card cursor-pointer border border-slate-200 bg-slate-50 hover:bg-blue-50/50 p-2.5 rounded-xl flex items-center space-x-2 transition-all">
                         <input type="radio" name="issue_type" value="เครื่องพิมพ์ (Printer)" class="hidden" onchange="updateCardStyle()">
-                        <span class="text-2xl">🖨️</span>
-                        <span class="text-sm font-bold text-slate-800">เครื่องพิมพ์ (Printer)</span>
+                        <span class="text-xl">🖨️</span>
+                        <span class="text-xs font-bold text-slate-800">เครื่องพิมพ์ (Printer)</span>
                     </label>
 
-                    <label class="issue-card cursor-pointer border-2 border-slate-200 bg-slate-50 hover:bg-blue-50/50 p-4 rounded-2xl flex items-center space-x-3 transition-all">
+                    <label class="issue-card cursor-pointer border border-slate-200 bg-slate-50 hover:bg-blue-50/50 p-2.5 rounded-xl flex items-center space-x-2 transition-all">
                         <input type="radio" name="issue_type" value="ระบบซอฟต์แวร์ / อื่นๆ" class="hidden" onchange="updateCardStyle()">
-                        <span class="text-2xl">⚙️</span>
-                        <span class="text-sm font-bold text-slate-800">ระบบซอฟต์แวร์ / อื่นๆ</span>
+                        <span class="text-xl">⚙️</span>
+                        <span class="text-xs font-bold text-slate-800">ซอฟต์แวร์ / อื่นๆ</span>
                     </label>
                 </div>
             </div>
 
-            <!-- รายละเอียดอาการ -->
+            <!-- รายละเอียดอาการ (ตัวหนังสือใหญ่ขึ้นเป็น text-base) -->
             <div>
-                <label class="block text-sm font-bold uppercase tracking-wider text-slate-700 mb-2">รายละเอียดอาการ (Details of symptoms)</label>
-                <textarea name="detail" rows="4" required class="w-full px-5 py-4 rounded-2xl border-2 border-slate-300 focus:ring-4 focus:ring-blue-500/30 focus:border-blue-600 focus:outline-none text-lg transition bg-white shadow-sm font-medium" placeholder="อธิบายอาการเบื้องต้น เช่น เปิดไม่ติด, ปริ้นไม่ออก..."></textarea>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">รายละเอียดอาการ (Details of symptoms)</label>
+                <textarea name="detail" rows="2.5" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 focus:outline-none text-base transition bg-white shadow-sm font-medium" placeholder="อธิบายอาการเบื้องต้น เช่น เปิดไม่ติด, ปริ้นไม่ออก..."></textarea>
             </div>
 
             <!-- ปุ่มส่งข้อมูล -->
-            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-800 text-white font-extrabold py-4 rounded-2xl transition-all duration-200 shadow-xl shadow-blue-600/30 text-xl active:scale-[0.99] cursor-pointer mt-2">
+            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold py-3 rounded-xl transition-all duration-200 shadow-md shadow-blue-600/25 text-base active:scale-[0.99] cursor-pointer mt-1">
                 🚀 ส่งเรื่องแจ้งทีม IT
             </button>
         </form>
 
         <!-- ปุ่มทางลัดไปหน้า Dashboard -->
-        <div class="mt-5">
-            <a href="/dashboard" class="block text-center w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-3.5 rounded-2xl text-base transition border-2 border-slate-300/80 shadow-sm">
+        <div class="mt-3.5">
+            <a href="/dashboard" class="block text-center w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-sm transition border border-slate-200 shadow-sm">
                 📊 ดูสถานะเคสทั้งหมดในระบบ
             </a>
         </div>
         
-        <div class="text-center mt-6">
-            <p class="text-sm text-slate-500 font-semibold">ระบบแจ้งเตือนอัตโนมัติผ่าน LINE Messaging API</p>
+        <div class="text-center mt-4">
+            <p class="text-[11px] text-slate-500 font-semibold">ระบบแจ้งเตือนอัตโนมัติผ่าน LINE Messaging API</p>
         </div>
     </div>
 
@@ -116,10 +117,10 @@
             document.querySelectorAll('.issue-card').forEach(card => {
                 const radio = card.querySelector('input[type="radio"]');
                 if (radio.checked) {
-                    card.classList.add('border-blue-600', 'bg-blue-50/80', 'ring-4', 'ring-blue-500/20', 'shadow-md');
+                    card.classList.add('border-blue-600', 'bg-blue-50', 'ring-2', 'ring-blue-500/20', 'shadow-sm');
                     card.classList.remove('border-slate-200', 'bg-slate-50');
                 } else {
-                    card.classList.remove('border-blue-600', 'bg-blue-50/80', 'ring-4', 'ring-blue-500/20', 'shadow-md');
+                    card.classList.remove('border-blue-600', 'bg-blue-50', 'ring-2', 'ring-blue-500/20', 'shadow-sm');
                     card.classList.add('border-slate-200', 'bg-slate-50');
                 }
             });
