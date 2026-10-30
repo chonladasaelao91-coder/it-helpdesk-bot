@@ -18,7 +18,7 @@ LINE_USER_ID = "U32ef157628dbd5df9f472662602e882e"
 RENDER_URL = "https://it-helpdesk-bot-pepi.onrender.com"
 
 # 🔴 วาง URL ของ Google Apps Script Web App ที่เพิ่ง Deploy ตรงนี้
-APPS_SCRIPT_URL = "วาง_URL_เว็บแอป_ที่นี่"
+APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxT-XO7kF6IccnmB1tj8bmayY3DL--068Ne3dDllSSU_1oFM5xDgnK5h7Ak8ADo5mfyAw/exec"
 
 
 def call_apps_script(payload):
