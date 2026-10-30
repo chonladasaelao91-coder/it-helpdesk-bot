@@ -25,7 +25,7 @@ GOOGLE_SHEET_NAME = "it_helpdesk_log"
 
 
 def get_google_sheet():
-    """ดึง Sheet1 พร้อมระบบ Retry ซ้ำ 3 ครั้งหากเจอปัญหาเรื่องเวลาบน Cloud"""
+    """ดึง Sheet1 พร้อมระบบ Retry ซ้ำ 3 ครั้งหากเจอปัญหาเรื่องเวลาบน Cloud (Invalid JWT Signature)"""
     max_retries = 3
     for attempt in range(max_retries):
         try:
@@ -148,12 +148,17 @@ async def dashboard(request: Request):
     try:
         sheet = get_google_sheet()
         if sheet:
-            data = sheet.get_all_records()
-            if data:
-                df = pd.DataFrame(data)
+            rows = sheet.get_all_values()
+            if len(rows) > 1:
+                header = rows[0]
+                data_rows = rows[1:]
+                
+                df = pd.DataFrame(data_rows, columns=["เวลา", "ผู้แจ้ง", "แผนก", "ประเภทปัญหา", "รายละเอียด", "สถานะ"][:len(header)])
+                df = df[df["ผู้แจ้ง"].str.strip() != ""]
                 total_cases = len(df)
+                
                 if "สถานะ" in df.columns:
-                    pending_cases = len(df[df["สถานะ"] == "รอดำเนินการ"])
+                    pending_cases = len(df[df["สถานะ"].str.strip() == "รอดำเนินการ"])
                     finished_cases = total_cases - pending_cases
 
                 tickets = df.to_dict(orient="records")
@@ -216,10 +221,11 @@ async def dashboard(request: Request):
         )
     else:
         for t in tickets:
+            status_text = t.get("สถานะ", "").strip()
             status_badge = (
                 '<span class="bg-amber-500/10 text-amber-400 px-3 py-1 rounded-full font-bold">รอดำเนินการ</span>'
-                if t.get("สถานะ") == "รอดำเนินการ"
-                else '<span class="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full font-bold">เสร็จสิ้น</span>'
+                if status_text == "รอดำเนินการ"
+                else f'<span class="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full font-bold">{status_text or "เสร็จสิ้น"}</span>'
             )
             html_content += f"""
                 <tr class="hover:bg-slate-800/50">
