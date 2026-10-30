@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import json
 import os
 from fastapi import FastAPI, Form, Request
@@ -50,6 +50,9 @@ async def home(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
 
 
+# กำหนดโซนเวลาประเทศไทย (UTC+7)
+TH_TIMEZONE = timezone(timedelta(hours=7))
+
 @app.post("/submit")
 async def submit_form(
     name: str = Form(...),
@@ -57,7 +60,8 @@ async def submit_form(
     issue_type: str = Form(...),
     detail: str = Form(...),
 ):
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # ดึงเวลาปัจจุบันตามโซนเวลาประเทศไทย (UTC+7)
+    timestamp = datetime.now(TH_TIMEZONE).strftime("%Y-%m-%d %H:%M:%S")
     
     payload = {
         "action": "append",
