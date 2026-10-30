@@ -1,11 +1,9 @@
 from datetime import datetime
 import json
 import os
-import time
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-import gspread
 import pandas as pd
 import requests
 
@@ -19,29 +17,17 @@ LINE_ACCESS_TOKEN = (
 LINE_USER_ID = "U32ef157628dbd5df9f472662602e882e"
 RENDER_URL = "https://it-helpdesk-bot-pepi.onrender.com"
 
-# URL ของ Google Sheet
-GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1Mri_ldBxXkIQYuFfMV55Bo_FmgsVfj0fiPWJzSbDqp0/edit"
-GOOGLE_SHEET_NAME = "it_helpdesk_log"
+# 🔴 วาง URL ของ Google Apps Script Web App ที่เพิ่ง Deploy ตรงนี้
+APPS_SCRIPT_URL = "วาง_URL_เว็บแอป_ที่นี่"
 
 
-def get_google_sheet():
-    """ดึง Sheet1 พร้อมระบบ Retry ซ้ำ 3 ครั้งหากเจอปัญหาเรื่องเวลาบน Cloud (Invalid JWT Signature)"""
-    max_retries = 3
-    for attempt in range(max_retries):
-        try:
-            gc = gspread.service_account(filename="credentials.json")
-            try:
-                sh = gc.open_by_url(GOOGLE_SHEET_URL)
-            except Exception:
-                sh = gc.open(GOOGLE_SHEET_NAME)
-            return sh.sheet1
-        except Exception as e:
-            print(f"⚠️ ลองเชื่อมต่อ Google Sheet ครั้งที่ {attempt + 1}/{max_retries} ไม่สำเร็จ: {e}")
-            if attempt < max_retries - 1:
-                time.sleep(3)  # หน่วงเวลา 3 วินาทีเพื่อให้เวลาระบบซิงค์ตรงกับ Google
-            else:
-                print("❌ Google Sheet Connection Error ปลายทางไม่ตอบรับ")
-                return None
+def call_apps_script(payload):
+    try:
+        response = requests.post(APPS_SCRIPT_URL, json=payload, timeout=10)
+        return response.json()
+    except Exception as e:
+        print("❌ Apps Script Connection Error:", e)
+        return None
 
 
 def send_line_notification(message):
@@ -72,21 +58,24 @@ async def submit_form(
     detail: str = Form(...),
 ):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    sheet = get_google_sheet()
-
-    row_idx = None
-    if sheet:
-        try:
-            all_values = sheet.get_all_values()
-            row_idx = len(all_values) + 1
-            sheet.append_row(
-                [timestamp, name, department, issue_type, detail, "รอดำเนินการ"]
-            )
-            print(f"✅ บันทึกข้อมูลเรียบร้อยแล้วที่แถว {row_idx}")
-        except Exception as e:
-            print("❌ เกิดข้อผิดพลาดขณะเพิ่มข้อมูลลง Sheet:", e)
+    
+    payload = {
+        "action": "append",
+        "timestamp": timestamp,
+        "name": name,
+        "department": department,
+        "issue_type": issue_type,
+        "detail": detail,
+        "status": "รอดำเนินการ"
+    }
+    
+    result = call_apps_script(payload)
+    row_idx = result.get("row") if result and result.get("status") == "success" else None
+    
+    if row_idx:
+        print(f"✅ บันทึกข้อมูลเรียบร้อยแล้วที่แถว {row_idx}")
     else:
-        print("⚠️ ไม่สามารถเชื่อมต่อ Google Sheet ได้ ข้อมูลจึงไม่ถูกบันทึก")
+        print("⚠️ ไม่สามารถบันทึกข้อมูลลง Google Sheet ได้")
 
     # สร้างข้อความแจ้งเตือนเข้า LINE
     close_link = f"{RENDER_URL}/close-ticket/{row_idx}" if row_idx else "ไม่สามารถระบุแถวได้"
@@ -109,12 +98,11 @@ async def submit_form(
 
 @app.get("/close-ticket/{row_idx}", response_class=HTMLResponse)
 async def close_ticket(request: Request, row_idx: int):
-    try:
-        sheet = get_google_sheet()
-        if sheet:
-            sheet.update_cell(row_idx, 6, "เสร็จสิ้น")
-    except Exception as e:
-        print("Close ticket error:", e)
+    payload = {
+        "action": "close",
+        "row_idx": row_idx
+    }
+    call_apps_script(payload)
 
     return """
     <!DOCTYPE html>
@@ -146,23 +134,24 @@ async def dashboard(request: Request):
     finished_cases = 0
 
     try:
-        sheet = get_google_sheet()
-        if sheet:
-            rows = sheet.get_all_values()
-            if len(rows) > 1:
-                header = rows[0]
-                data_rows = rows[1:]
-                
-                df = pd.DataFrame(data_rows, columns=["เวลา", "ผู้แจ้ง", "แผนก", "ประเภทปัญหา", "รายละเอียด", "สถานะ"][:len(header)])
-                df = df[df["ผู้แจ้ง"].str.strip() != ""]
-                total_cases = len(df)
-                
-                if "สถานะ" in df.columns:
-                    pending_cases = len(df[df["สถานะ"].str.strip() == "รอดำเนินการ"])
-                    finished_cases = total_cases - pending_cases
+        payload = {"action": "get_all"}
+        response = requests.post(APPS_SCRIPT_URL, json=payload, timeout=10)
+        rows = response.json()
+        
+        if rows and len(rows) > 1:
+            header = rows[0]
+            data_rows = rows[1:]
+            
+            df = pd.DataFrame(data_rows, columns=["เวลา", "ผู้แจ้ง", "แผนก", "ประเภทปัญหา", "รายละเอียด", "สถานะ"][:len(header)])
+            df = df[df["ผู้แจ้ง"].str.strip() != ""]
+            total_cases = len(df)
+            
+            if "สถานะ" in df.columns:
+                pending_cases = len(df[df["สถานะ"].str.strip() == "รอดำเนินการ"])
+                finished_cases = total_cases - pending_cases
 
-                tickets = df.to_dict(orient="records")
-                tickets.reverse()
+            tickets = df.to_dict(orient="records")
+            tickets.reverse()
     except Exception as e:
         print("Dashboard load error:", e)
 
